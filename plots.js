@@ -1,54 +1,37 @@
-// Create an array of each country's numbers
-var us = Object.values(data.us);
-var uk = Object.values(data.uk);
-var canada = Object.values(data.canada);
+// Sort the data array using the greekSearchResults value
+data.sort(function(a, b) {
+  return parseFloat(b.greekSearchResults) - parseFloat(a.greekSearchResults);
+});
 
-// Create an array of music provider labels
-var labels = Object.keys(data.us);
+// Slice the first 10 objects for plotting
+data = data.slice(0, 10);
 
-// Display the default plot
-function init() {
-  var data = [{
-    values: us,
-    labels: labels,
-    type: "pie"
-  }];
+// Reverse the array due to Plotly's defaults
+data = data.reverse();
 
-  var layout = {
-    height: 600,
-    width: 800
-  };
+// Trace1 for the Greek Data
+var trace1 = {
+  x: data.map(row => row.greekSearchResults),
+  y: data.map(row => row.greekName),
+  text: data.map(row => row.greekName),
+  name: "Greek",
+  type: "bar",
+  orientation: "h"
+};
 
-  Plotly.newPlot("pie", data, layout);
-}
+// data
+var data = [trace1];
 
-// On change to the DOM, call getData()
-d3.selectAll("#selDataset").on("change", getData);
-
-// Function called by DOM changes
-function getData() {
-  var dropdownMenu = d3.select("#selDataset");
-  // Assign the value of the dropdown menu option to a variable
-  var dataset = dropdownMenu.property("value");
-  // Initialize an empty array for the country's data
-  var data = [];
-
-  if (dataset == 'us') {
-      data = us;
+// Apply the group bar mode to the layout
+var layout = {
+  title: "Greek gods search results",
+  margin: {
+    l: 100,
+    r: 100,
+    t: 100,
+    b: 100
   }
-  else if (dataset == 'uk') {
-      data = uk;
-  }
-  else if (dataset == 'canada') {
-      data = canada;
-  }
-  // Call function to update the chart
-  updatePlotly(data);
-}
+};
 
-// Update the restyled plot's values
-function updatePlotly(newdata) {
-  Plotly.restyle("pie", "values", [newdata]);
-}
-
-init();
+// Render the plot to the div tag with id "plot"
+Plotly.newPlot("plot", data, layout);
